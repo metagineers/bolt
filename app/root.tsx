@@ -59,6 +59,11 @@ export const Head = createHead(() => (
     <Meta />
     <Links />
     <script dangerouslySetInnerHTML={{ __html: inlineThemeCode }} />
+    <script
+      defer
+      src="https://static.cloudflareinsights.com/beacon.min.js"
+      data-cf-beacon='{"token": "e670513948ff420187e4dd56b31ff46e"}'
+    ></script>
   </>
 ));
 
@@ -78,6 +83,23 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+import { logStore } from './lib/stores/logs';
+
 export default function App() {
-  return <Outlet />;
+  const theme = useStore(themeStore);
+
+  useEffect(() => {
+    logStore.logSystem('Application initialized', {
+      theme,
+      platform: navigator.platform,
+      userAgent: navigator.userAgent,
+      timestamp: new Date().toISOString(),
+    });
+  }, []);
+
+  return (
+    <Layout>
+      <Outlet />
+    </Layout>
+  );
 }
